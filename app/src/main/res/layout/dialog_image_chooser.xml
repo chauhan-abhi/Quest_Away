@@ -15,6 +15,7 @@
             android:drawableStart="@android:drawable/ic_menu_camera"
             android:gravity="center_vertical"
             android:padding="8dp"
+            android:textColor="@color/colorAccent"
             android:text="Capture Image"
             android:textSize="16sp"
     />
@@ -33,6 +34,7 @@
             android:drawableStart="@android:drawable/ic_menu_gallery"
             android:gravity="center_vertical"
             android:padding="8dp"
+            android:textColor="@color/colorAccent"
             android:text="Pick From Gallery"
             android:textSize="16sp"
     />

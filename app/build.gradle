@@ -25,6 +25,7 @@ android {
         }
     }
     compileOptions {
+        targetCompatibility JavaVersion.VERSION_1_8
         sourceCompatibility JavaVersion.VERSION_1_8
     }
 }
@@ -39,6 +40,8 @@ dependencies {
     implementation 'com.google.firebase:firebase-ml-vision:18.0.2'
 
     implementation 'com.jakewharton:butterknife:8.8.1'
+    implementation 'org.greenrobot:eventbus:3.0.0'
+
 
     // Retrofit
     implementation "com.squareup.retrofit2:retrofit:$retrofit_version"
@@ -49,6 +52,7 @@ dependencies {
     implementation "com.google.dagger:dagger:$dagger2_version"
     implementation "com.google.dagger:dagger-android:$dagger2_version"
     implementation "com.google.dagger:dagger-android-support:$dagger2_version"
+    implementation 'com.android.support:support-v4:27.1.1'
     kapt "com.google.dagger:dagger-compiler:$dagger2_version"
     kapt "com.google.dagger:dagger-android-processor:$dagger2_version"
     compileOnly "org.glassfish:javax.annotation:3.1.1"
