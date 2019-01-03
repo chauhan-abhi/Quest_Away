@@ -91,7 +91,7 @@ public abstract class FilePickerActivity extends BaseActivity {
                         if (Environment.MEDIA_MOUNTED.equals(state)) {
                             if (Build.VERSION.SDK_INT > Build.VERSION_CODES.KITKAT) {
                                 String appDirPath =
-                                        Environment.getExternalStorageDirectory().getAbsolutePath() + "/" + "questaway";
+                                        Environment.getExternalStorageDirectory().getAbsolutePath() + "/" + "QuestAway";
                                 File appDir = new File(appDirPath);
                                 if (!appDir.exists()) {
                                     appDir.mkdirs();
@@ -134,8 +134,8 @@ public abstract class FilePickerActivity extends BaseActivity {
 
     protected void onImageResult(Context context, int requestCode, int resultCode, Intent data) {
         if (resultCode == Activity.RESULT_OK) {
-            int picWidth = 300;
-            int picHeight = 300;
+            int picWidth = 480;
+            int picHeight = 360;
             if (requestCode == CAMERA_REQUEST_CODE) {
                 Bitmap bm = null;
                 FileOutputStream outputStream = null;
@@ -150,7 +150,7 @@ public abstract class FilePickerActivity extends BaseActivity {
                         mFileCaptured = new File(context.getFilesDir(), tag + ".jpg");
                         outputStream = new FileOutputStream(mFileCaptured);
                     }
-                    bm.compress(Bitmap.CompressFormat.PNG, 90, outputStream);
+                    //bm.compress(Bitmap.CompressFormat.PNG, 90, outputStream);
 
                     imagePickerListener.onImagePicked(mFileCaptured, tag);
                 } catch (IOException e) {
@@ -186,7 +186,7 @@ public abstract class FilePickerActivity extends BaseActivity {
 
                             File fileProfilePic = new File(context.getFilesDir(), tag + ".jpg");
                             outputStream = new FileOutputStream(fileProfilePic);
-                            bm.compress(Bitmap.CompressFormat.PNG, 90, outputStream);
+                            //bm.compress(Bitmap.CompressFormat.PNG, 90, outputStream);
                             outputStream.flush();
                             outputStream.close();
 
