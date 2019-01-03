@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "686665509059",
+    "firebase_url": "https://questaway-e2bc9.firebaseio.com",
+    "project_id": "questaway-e2bc9",
+    "storage_bucket": "questaway-e2bc9.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:686665509059:android:5e8e11676437f2b9",
+        "android_client_info": {
+          "package_name": "com.abhi.questaway"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "686665509059-bp4odkaqairqridcgp76vdp0s9gr5i61.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.abhi.questaway",
+            "certificate_hash": "9e549df69849d4cbe21e1dd43825596e83574075"
+          }
+        },
+        {
+          "client_id": "686665509059-m32t9ond8v1dfp9uofsfes0mpa6ojs82.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyANOPRlGBviEqxSADO93CSVNM_7dSbjnUA"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "686665509059-m32t9ond8v1dfp9uofsfes0mpa6ojs82.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
