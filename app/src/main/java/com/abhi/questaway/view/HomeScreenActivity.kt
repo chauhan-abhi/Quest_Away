@@ -52,16 +52,18 @@ class HomeScreenActivity : FilePickerActivity() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (resultCode == Activity.RESULT_OK) {
-            if (requestCode == CAMERA_REQUEST_CODE || requestCode == GALLERY_REQUEST_CODE) {
-                onImageResult(this, requestCode, resultCode, data)
+            if (data != null && data.extras != null) {
+                if (requestCode == CAMERA_REQUEST_CODE || requestCode == GALLERY_REQUEST_CODE) {
+                    onImageResult(this, requestCode, resultCode, data)
+                }
             }
         }
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public fun selectImageEvent(event: SelectImageEvent) {
-        val fileName = "IMG" + System.currentTimeMillis()
-        selectImage(this, { imageFile, tag ->
+        val fileName = "IMG"
+        selectImage(this, { imageFile, _ ->
 
             startTextRecognition(Uri.fromFile(imageFile))
 
@@ -104,7 +106,7 @@ class HomeScreenActivity : FilePickerActivity() {
                         }*/
                     }
 
-                        EventBus.getDefault().post(TextViewSetEvent(linewiseText))
+                    EventBus.getDefault().post(TextViewSetEvent(linewiseText))
 
                 }
             }

@@ -116,7 +116,6 @@ public abstract class FilePickerActivity extends BaseActivity {
             }
 
             @Override public void onRejected(int requestCode) {
-                return;
             }
         });
     }
