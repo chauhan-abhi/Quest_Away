@@ -3,9 +3,10 @@ package com.abhi.questaway.base;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 
-public abstract class BaseActivity extends PermissionsActivity {
+public abstract class BaseActivity extends AppCompatActivity {
 
 
     public final String TAG = this.getClass().getSimpleName();
