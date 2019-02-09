@@ -1,83 +1,147 @@
 package com.abhi.questaway.view
 
+import android.Manifest
 import android.app.Activity
-import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.view.View
 import com.abhi.questaway.R
-import com.abhi.questaway.base.FilePickerActivity
-import com.abhi.questaway.events.SelectImageEvent
-import org.greenrobot.eventbus.Subscribe
-import org.greenrobot.eventbus.ThreadMode
-import org.greenrobot.eventbus.EventBus
 import android.net.Uri
+import android.widget.Button
+import android.widget.TextView
 import android.widget.Toast
-import com.abhi.questaway.events.TextViewSetEvent
+import com.abhi.questaway.base.ImagePickerActivity
 import com.google.firebase.ml.vision.FirebaseVision
 import com.google.firebase.ml.vision.common.FirebaseVisionImage
+import com.karumi.dexter.PermissionToken
+import com.karumi.dexter.MultiplePermissionsReport
+import com.karumi.dexter.listener.multi.MultiplePermissionsListener
+import android.graphics.Bitmap
+import android.provider.MediaStore
+import android.support.v7.app.AppCompatActivity
+import com.karumi.dexter.Dexter
+import com.karumi.dexter.listener.PermissionRequest
+import java.lang.Exception
 
 
-class HomeScreenActivity : FilePickerActivity() {
+class HomeScreenActivity : AppCompatActivity() {
 
-    private val CAMERA_REQUEST_CODE = 10000
-    private val GALLERY_REQUEST_CODE = 20000
+    private val REQUEST_IMAGE = 100
+    lateinit var button: Button
+    lateinit var textView: TextView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        if (savedInstanceState == null) {
-            val homeFragment = HomeFragment()
-            val ft = supportFragmentManager.beginTransaction()
-            ft.add(R.id.content_frame, homeFragment, HomeFragment::class.java.simpleName).commit()
+        button = findViewById(R.id.upload_button)
+        textView = findViewById(R.id.textView)
+        button.setOnClickListener {
+            onSelectImageClicked()
         }
+        ImagePickerActivity.clearCache(this)
     }
 
-    override fun setUpComponent() {
+    private fun onSelectImageClicked() {
+        Dexter.withActivity(this)
+            .withPermissions(Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+            .withListener(object : MultiplePermissionsListener {
+                override fun onPermissionsChecked(report: MultiplePermissionsReport) {
+                    if (report.areAllPermissionsGranted()) {
+                        showImagePickerOptions()
+                    }
+
+                    if (report.isAnyPermissionPermanentlyDenied) {
+                        // showSettingsDialog()
+                    }
+                }
+
+                override fun onPermissionRationaleShouldBeShown(
+                    permissions: MutableList<PermissionRequest>?,
+                    token: PermissionToken
+                ) {
+                    token.continuePermissionRequest()
+                }
+
+            }).check()
+
     }
 
-    override fun setUpViewHolder(view: View?) {
+    /*private fun showSettingsDialog() {
+        val builder = AlertDialog.Builder(this@HomeScreenActivity)
+        builder.setTitle(getString(R.string.dialog_permission_title))
+        builder.setMessage(getString(R.string.dialog_permission_message))
+        builder.setPositiveButton(getString(R.string.go_to_settings), { dialog, which->
+            dialog.cancel()
+            openSettings() })
+        builder.setNegativeButton(getString(android.R.string.cancel), { dialog, which-> dialog.cancel() })
+        builder.show()
+    }*/
+
+    private fun showImagePickerOptions() {
+        ImagePickerActivity.showImagePickerOptions(this, object : ImagePickerActivity.PickerOptionListener {
+            override fun onTakeCameraSelected() {
+                launchCameraIntent()
+            }
+
+            override fun onChooseGallerySelected() {
+                launchGalleryIntent()
+            }
+
+        })
     }
 
-    override fun onStart() {
-        super.onStart()
-        EventBus.getDefault().register(this)
+    private fun launchGalleryIntent() {
+        val intent = Intent(this, ImagePickerActivity::class.java)
+        intent.putExtra(ImagePickerActivity.INTENT_IMAGE_PICKER_OPTION, ImagePickerActivity.REQUEST_GALLERY_IMAGE)
+
+        // setting aspect ratio
+        intent.putExtra(ImagePickerActivity.INTENT_LOCK_ASPECT_RATIO, true)
+        intent.putExtra(ImagePickerActivity.INTENT_ASPECT_RATIO_X, 1) // 16x9, 1x1, 3:4, 3:2
+        intent.putExtra(ImagePickerActivity.INTENT_ASPECT_RATIO_Y, 1)
+        startActivityForResult(intent, REQUEST_IMAGE)
     }
 
-    override fun onStop() {
-        super.onStop()
-        EventBus.getDefault().unregister(this)
+    private fun launchCameraIntent() {
+        val intent = Intent(this, ImagePickerActivity::class.java)
+        intent.putExtra(ImagePickerActivity.INTENT_IMAGE_PICKER_OPTION, ImagePickerActivity.REQUEST_IMAGE_CAPTURE)
+
+        // setting aspect ratio
+        intent.putExtra(ImagePickerActivity.INTENT_LOCK_ASPECT_RATIO, true)
+        intent.putExtra(ImagePickerActivity.INTENT_ASPECT_RATIO_X, 1) // 16x9, 1x1, 3:4, 3:2
+        intent.putExtra(ImagePickerActivity.INTENT_ASPECT_RATIO_Y, 1)
+
+        // setting maximum bitmap width and height
+        intent.putExtra(ImagePickerActivity.INTENT_SET_BITMAP_MAX_WIDTH_HEIGHT, true)
+        intent.putExtra(ImagePickerActivity.INTENT_BITMAP_MAX_WIDTH, 1000)
+        intent.putExtra(ImagePickerActivity.INTENT_BITMAP_MAX_HEIGHT, 1000)
+
+        startActivityForResult(intent, REQUEST_IMAGE)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        if (resultCode == Activity.RESULT_OK) {
-            if (requestCode == CAMERA_REQUEST_CODE || requestCode == GALLERY_REQUEST_CODE) {
-                onImageResult(this, requestCode, resultCode, data)
+        if (requestCode == REQUEST_IMAGE) {
+            if (resultCode == Activity.RESULT_OK) {
+                if (data != null) {
+                    val uri = data.getParcelableExtra<Uri>("path")
+                    try {
+                        val bitmap = MediaStore.Images.Media.getBitmap(this.contentResolver, uri)
+                        // ml kit function call
+                        startTextRecognition(bitmap)
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                    }
+                }
             }
         }
     }
 
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public fun selectImageEvent(event: SelectImageEvent) {
-        val fileName = "IMG" + System.currentTimeMillis()
-        selectImage(this, { imageFile, tag ->
-
-            startTextRecognition(Uri.fromFile(imageFile))
-
-        }, fileName)
-    }
-
-    private fun startTextRecognition(uri: Uri) {
-
-        val image = FirebaseVisionImage.fromFilePath(this, uri)
-
+    private fun startTextRecognition(bitmap: Bitmap) {
+        val image = FirebaseVisionImage.fromBitmap(bitmap)
         val detector = FirebaseVision.getInstance()
             .onDeviceTextRecognizer
+
         val result = detector.processImage(image)
             .addOnSuccessListener { firebaseVisionText ->
-                // Task completed successfully
-                // ...
                 var linewiseText = ""
                 for (block in firebaseVisionText.textBlocks) {
 //                    val boundingBox = block.boundingBox
@@ -87,7 +151,6 @@ class HomeScreenActivity : FilePickerActivity() {
 //                    val blockCornerPoints = block.cornerPoints
 //                    val blockFrame = block.boundingBox
 
-                    val text = block.text
                     for (line in block.lines) {
                         val lineText = line.text
                         linewiseText = "$linewiseText\n$lineText"
@@ -103,22 +166,12 @@ class HomeScreenActivity : FilePickerActivity() {
                             val elementFrame = element.boundingBox
                         }*/
                     }
-
-                        EventBus.getDefault().post(TextViewSetEvent(linewiseText))
-
+                    textView.text = linewiseText
                 }
             }
             .addOnFailureListener {
-                // Task failed with an exception
-                // ...
-                Toast.makeText(this, "sdas", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Oops! Text recognition failed", Toast.LENGTH_SHORT).show()
             }
     }
-
-    override fun onImageResult(context: Context, requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onImageResult(context, requestCode, resultCode, data)
-        supportActionBar!!.setTitle("Image to text")
-    }
-
 }
 

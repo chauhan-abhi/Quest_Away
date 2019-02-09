@@ -5,9 +5,15 @@ import dagger.Component
 import javax.inject.Singleton
 
 @Singleton
-@Component(modules = arrayOf(AppModule::class))
+@Component(modules = [AppModule::class])
 interface AppComponent {
 
     fun inject(app: QuestAwayApplication)
+    @Component.Builder
+    interface Builder {
+        fun appModule(appModule: AppModule):Builder
+
+        fun build(): AppComponent
+    }
 
 }
