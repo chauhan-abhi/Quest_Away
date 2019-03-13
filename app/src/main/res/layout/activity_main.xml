@@ -6,26 +6,64 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         tools:context=".view.HomeScreenActivity">
+    <ScrollView android:layout_width="match_parent" android:layout_height="wrap_content"
+                app:layout_constraintTop_toTopOf="parent" app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent" app:layout_constraintBottom_toBottomOf="parent">
 
-    <Button
-            android:text="Select Image"
+
+        <TextView
+                android:text="@string/capture_image_text"
+                android:layout_width="match_parent"
+                android:textColor="@android:color/darker_gray"
+                android:textSize="18sp"
+                android:layout_gravity="center"
+                android:layout_height="wrap_content"
+                android:id="@+id/textView"
+                app:layout_constraintStart_toStartOf="parent"
+                android:layout_marginStart="16dp" app:layout_constraintEnd_toEndOf="parent"
+                android:layout_marginEnd="16dp"
+                android:textAppearance="@style/TextAppearance.AppCompat.SearchResult.Subtitle"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"/>
+
+
+    </ScrollView>
+
+    <android.support.design.widget.FloatingActionButton
+            android:id="@+id/upload_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/upload_button"
-            app:layout_constraintStart_toStartOf="parent"
-            android:layout_marginStart="8dp"
+            android:layout_gravity="bottom|end"
+            android:layout_margin="16dp"
+            android:layout_marginEnd="16dp"
             app:layout_constraintEnd_toEndOf="parent"
-            android:layout_marginEnd="8dp"
-            android:layout_marginTop="32dp"
-            app:layout_constraintTop_toTopOf="parent"
-    />
-    <TextView
-            android:text=""
-            android:layout_width="0dp"
+            app:srcCompat="@drawable/ic_photo_camera_white_24dp"
+            android:layout_marginBottom="16dp" app:layout_constraintBottom_toBottomOf="parent"/>
+
+    <android.support.design.widget.FloatingActionButton
+            android:id="@+id/proceed_tick"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/textView" android:layout_marginTop="32dp"
-            app:layout_constraintTop_toBottomOf="@+id/upload_button" app:layout_constraintStart_toStartOf="parent"
-            android:layout_marginStart="8dp" app:layout_constraintEnd_toEndOf="parent" android:layout_marginEnd="8dp"
-            android:visibility="visible"/>
+            android:layout_margin="16dp"
+            app:srcCompat="@drawable/ic_check_white_24dp"
+            android:visibility="gone"
+            app:layout_constraintStart_toStartOf="parent" app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintEnd_toStartOf="@+id/cancel_tick"
+            app:layout_constraintHorizontal_chainStyle="packed"
+            app:layout_constraintBottom_toBottomOf="@+id/cancel_tick"
+            app:layout_constraintTop_toTopOf="@+id/cancel_tick"/>
+    <android.support.design.widget.FloatingActionButton
+            android:id="@+id/cancel_tick"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            app:srcCompat="@drawable/ic_close_white_24dp"
+            android:visibility="gone"
+            app:layout_constraintStart_toEndOf="@+id/proceed_tick"
+            app:layout_constraintEnd_toEndOf="parent" android:layout_marginEnd="8dp"
+            app:layout_constraintTop_toTopOf="@+id/upload_button"
+            app:layout_constraintBottom_toBottomOf="@+id/upload_button"/>
+
 
 </android.support.constraint.ConstraintLayout>

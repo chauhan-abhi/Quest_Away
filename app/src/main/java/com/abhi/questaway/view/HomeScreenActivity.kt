@@ -3,39 +3,59 @@ package com.abhi.questaway.view
 import android.Manifest
 import android.app.Activity
 import android.content.Intent
-import android.os.Bundle
-import com.abhi.questaway.R
+import android.graphics.Bitmap
 import android.net.Uri
-import android.widget.Button
+import android.os.Bundle
+import android.provider.MediaStore
+import android.support.design.widget.FloatingActionButton
+import android.support.v7.app.AppCompatActivity
+import android.view.View
 import android.widget.TextView
 import android.widget.Toast
+import com.abhi.questaway.R
 import com.abhi.questaway.base.ImagePickerActivity
 import com.google.firebase.ml.vision.FirebaseVision
 import com.google.firebase.ml.vision.common.FirebaseVisionImage
-import com.karumi.dexter.PermissionToken
-import com.karumi.dexter.MultiplePermissionsReport
-import com.karumi.dexter.listener.multi.MultiplePermissionsListener
-import android.graphics.Bitmap
-import android.provider.MediaStore
-import android.support.v7.app.AppCompatActivity
 import com.karumi.dexter.Dexter
+import com.karumi.dexter.MultiplePermissionsReport
+import com.karumi.dexter.PermissionToken
 import com.karumi.dexter.listener.PermissionRequest
-import java.lang.Exception
+import com.karumi.dexter.listener.multi.MultiplePermissionsListener
 
 
 class HomeScreenActivity : AppCompatActivity() {
 
     private val REQUEST_IMAGE = 100
-    lateinit var button: Button
+    lateinit var button: FloatingActionButton
+    lateinit var proceedButton: FloatingActionButton
+    lateinit var cancelButton: FloatingActionButton
+
     lateinit var textView: TextView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         button = findViewById(R.id.upload_button)
+        proceedButton = findViewById(R.id.proceed_tick)
+        cancelButton = findViewById(R.id.cancel_tick)
         textView = findViewById(R.id.textView)
         button.setOnClickListener {
             onSelectImageClicked()
+        }
+        textView.text = getString(R.string.capture_image_text)
+        proceedButton.setOnClickListener {
+            // take query
+            proceedButton.visibility = View.GONE
+            cancelButton.visibility = View.GONE
+            button.visibility = View.VISIBLE
+            val intent = Intent(this@HomeScreenActivity, ParagraphActivity::class.java)
+            intent.putExtra("paragraph", textView.text.toString())
+            startActivity(intent)
+        }
+        cancelButton.setOnClickListener {
+            proceedButton.visibility = View.GONE
+            cancelButton.visibility = View.GONE
+            button.visibility = View.VISIBLE
         }
         ImagePickerActivity.clearCache(this)
     }
@@ -167,6 +187,10 @@ class HomeScreenActivity : AppCompatActivity() {
                         }*/
                     }
                     textView.text = linewiseText
+                    proceedButton.visibility = View.VISIBLE
+                    cancelButton.visibility = View.VISIBLE
+                    button.visibility = View.INVISIBLE
+
                 }
             }
             .addOnFailureListener {
