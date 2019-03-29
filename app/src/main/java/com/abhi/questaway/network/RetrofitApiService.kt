@@ -6,7 +6,10 @@ import retrofit2.http.Query
 
 interface RetrofitApiService {
 
-    @GET
-    fun getResult(@Query("paragraph")paragraph: String, @Query("question")question: String): Call<ResultModel>
+    @GET("submit/")
+    fun getResult(
+        @Query("paragraph") paragraph: String,
+        @Query("question") question: String
+    ): Call<ResultModel>
 
 }

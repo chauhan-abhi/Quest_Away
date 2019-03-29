@@ -5,11 +5,11 @@ import android.support.v7.app.AppCompatActivity
 import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
-import com.abhi.questaway.QuestAwayApplication
 import com.abhi.questaway.R
 import com.abhi.questaway.di.Injector
 import com.abhi.questaway.network.ResultModel
 import com.abhi.questaway.network.RetrofitApiService
+import dagger.android.AndroidInjection
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -21,10 +21,8 @@ class ParagraphActivity : AppCompatActivity() {
     lateinit var apiService: RetrofitApiService
     lateinit var textView: TextView
 
-    init {
-        Injector.appComponent.inject(this)
-    }
     override fun onCreate(savedInstanceState: Bundle?) {
+        AndroidInjection.inject(this)
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_paragraph)
         button = findViewById(R.id.txtSubmit)

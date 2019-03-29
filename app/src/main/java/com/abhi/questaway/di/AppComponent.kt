@@ -1,21 +1,14 @@
 package com.abhi.questaway.di
 
 import com.abhi.questaway.QuestAwayApplication
-import com.abhi.questaway.view.ParagraphActivity
 import dagger.Component
+import dagger.android.AndroidInjectionModule
 import javax.inject.Singleton
 
 @Singleton
-@Component(modules = [AppModule::class])
+@Component(modules = [AndroidInjectionModule::class, BuildersModule::class, AppModule::class, NetModule::class])
 interface AppComponent {
 
     fun inject(app: QuestAwayApplication)
-    fun inject(paragraphActivity: ParagraphActivity)
-
-    @Component.Builder
-    interface Builder {
-        fun build(): AppComponent
-        fun appModule(appModule: AppModule):Builder
-    }
 
 }

@@ -8,6 +8,7 @@ object Injector {
     fun init(app: QuestAwayApplication) {
         appComponent = DaggerAppComponent.builder()
             .appModule(AppModule(app))
+            .netModule(NetModule())
             .build()
         appComponent.inject(app)
     }
