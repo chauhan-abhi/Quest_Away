@@ -22,14 +22,12 @@ import com.karumi.dexter.PermissionToken
 import com.karumi.dexter.listener.PermissionRequest
 import com.karumi.dexter.listener.multi.MultiplePermissionsListener
 
-
 class HomeScreenActivity : AppCompatActivity() {
 
     private val REQUEST_IMAGE = 100
     lateinit var button: FloatingActionButton
     lateinit var proceedButton: FloatingActionButton
     lateinit var cancelButton: FloatingActionButton
-
     lateinit var textView: TextView
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -160,7 +158,7 @@ class HomeScreenActivity : AppCompatActivity() {
         val detector = FirebaseVision.getInstance()
             .onDeviceTextRecognizer
 
-        val result = detector.processImage(image)
+        detector.processImage(image)
             .addOnSuccessListener { firebaseVisionText ->
                 var linewiseText = ""
                 for (block in firebaseVisionText.textBlocks) {

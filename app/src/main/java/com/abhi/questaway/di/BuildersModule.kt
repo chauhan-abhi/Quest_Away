@@ -8,5 +8,5 @@ import dagger.android.ContributesAndroidInjector
 abstract class BuildersModule {
 
     @ContributesAndroidInjector
-    abstract fun contributeParagraphActivity(): ParagraphActivity
+    abstract fun contributeParagrapgActivity(): ParagraphActivity
 }

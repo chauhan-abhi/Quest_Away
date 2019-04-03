@@ -20,11 +20,12 @@ class ParagraphActivity : AppCompatActivity() {
     lateinit var question: EditText
     lateinit var apiService: RetrofitApiService
     lateinit var textView: TextView
+    lateinit var retrofitApiService: RetrofitApiService
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        AndroidInjection.inject(this)
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_paragraph)
+        AndroidInjection.inject(this)
         button = findViewById(R.id.txtSubmit)
         question = findViewById(R.id.editText)
         textView = findViewById(R.id.result)

@@ -8,7 +8,5 @@ import javax.inject.Singleton
 @Singleton
 @Component(modules = [AndroidInjectionModule::class, BuildersModule::class, AppModule::class, NetModule::class])
 interface AppComponent {
-
     fun inject(app: QuestAwayApplication)
-
 }
