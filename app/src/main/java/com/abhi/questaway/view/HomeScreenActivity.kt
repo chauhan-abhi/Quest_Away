@@ -14,6 +14,7 @@ import android.widget.TextView
 import android.widget.Toast
 import com.abhi.questaway.R
 import com.abhi.questaway.base.ImagePickerActivity
+import com.abhi.questaway.view.chatui.ChatActivity
 import com.google.firebase.ml.vision.FirebaseVision
 import com.google.firebase.ml.vision.common.FirebaseVisionImage
 import com.karumi.dexter.Dexter
@@ -46,7 +47,7 @@ class HomeScreenActivity : AppCompatActivity() {
             proceedButton.visibility = View.GONE
             cancelButton.visibility = View.GONE
             button.visibility = View.VISIBLE
-            val intent = Intent(this@HomeScreenActivity, ParagraphActivity::class.java)
+            val intent = Intent(this@HomeScreenActivity, ChatActivity::class.java)
             intent.putExtra("paragraph", textView.text.toString())
             startActivity(intent)
         }
