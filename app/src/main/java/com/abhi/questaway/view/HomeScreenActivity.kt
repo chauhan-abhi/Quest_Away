@@ -184,15 +184,19 @@ class HomeScreenActivity : AppCompatActivity() {
                             val elementFrame = element.boundingBox
                         }*/
                     }
-                    textView.text = linewiseText
-                    proceedButton.visibility = View.VISIBLE
-                    cancelButton.visibility = View.VISIBLE
-                    button.visibility = View.INVISIBLE
-
+                    if (linewiseText == "") {
+                        textView.text = "No text found. Please click another image"
+                    } else {
+                        textView.text = linewiseText
+                        proceedButton.visibility = View.VISIBLE
+                        cancelButton.visibility = View.VISIBLE
+                        button.visibility = View.INVISIBLE
+                    }
                 }
             }
             .addOnFailureListener {
                 Toast.makeText(this, "Oops! Text recognition failed", Toast.LENGTH_SHORT).show()
+                textView.text = "No text found. Please click another image"
             }
     }
 }

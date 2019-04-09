@@ -43,6 +43,9 @@ dependencies {
     implementation 'com.karumi:dexter:5.0.0'
     implementation 'com.github.yalantis:ucrop:2.2.2'
 
+    implementation "com.squareup.okhttp3:logging-interceptor:3.9.1"
+
+
     //moshi
     implementation "com.squareup.moshi:moshi-kotlin:$moshi_version"
     implementation "com.squareup.moshi:moshi-adapters:$moshi_version"

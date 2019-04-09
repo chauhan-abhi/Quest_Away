@@ -3,6 +3,7 @@ package com.abhi.questaway
 import android.app.Activity
 import android.app.Application
 import com.abhi.questaway.di.Injector
+import com.facebook.stetho.Stetho
 import dagger.android.AndroidInjector
 import dagger.android.DispatchingAndroidInjector
 import dagger.android.HasActivityInjector
@@ -16,6 +17,7 @@ class QuestAwayApplication: Application(), HasActivityInjector {
     override fun onCreate() {
         super.onCreate()
         Injector.init(this)
+        Stetho.initializeWithDefaults(this)
     }
 
     override fun activityInjector(): AndroidInjector<Activity> = activityInjector
