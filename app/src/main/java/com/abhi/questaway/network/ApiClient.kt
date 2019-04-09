@@ -19,7 +19,7 @@ class ApiClient {
         private var retrofit: Retrofit? = null
         private var okHttpClient: OkHttpClient? = null
 
-        private const val REQUEST_TIMEOUT: Long = 60L
+        private const val REQUEST_TIMEOUT: Long = 10L
 
         fun getClient(context: Context): Retrofit? {
 

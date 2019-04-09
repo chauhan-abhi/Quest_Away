@@ -45,7 +45,17 @@ dependencies {
 
     implementation "com.squareup.okhttp3:logging-interceptor:3.9.1"
     implementation 'com.github.stfalcon:chatkit:0.3.3'
+
     implementation "com.squareup.picasso:picasso:$picasso_version"
+
+    //ImageViews
+    implementation "de.hdodenhof:circleimageview:$circleImageViewVersion"
+    implementation "com.github.siyamed:android-shape-imageview:$shapeImageViewVersion"
+
+    //Utils
+    implementation "me.relex:circleindicator:$circleindicatorVersion"
+
+
     //moshi
     implementation "com.squareup.moshi:moshi-kotlin:$moshi_version"
     implementation "com.squareup.moshi:moshi-adapters:$moshi_version"

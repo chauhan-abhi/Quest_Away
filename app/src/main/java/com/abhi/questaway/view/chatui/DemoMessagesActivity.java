@@ -53,7 +53,7 @@ public abstract class DemoMessagesActivity extends AppCompatActivity
          */
         if (isFirstTime == true) {
             messagesAdapter.addToStart(MessagesFixtures.getTextMessage(
-                    "Hi! Welcome to Quest Away. You may ask any question relevant to the paragraph taken",
+                    "Hi! Welcome to Quest Away. Please select the image you wish to to be processed",
                     true),
                     true
             );

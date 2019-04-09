@@ -6,6 +6,9 @@ buildscript {
     ext.retrofit_version = '2.5.0'
     ext.moshi_version = '1.8.0'
     ext.picasso_version = '2.71828'
+    ext.circleImageViewVersion = '2.2.0'
+    ext.shapeImageViewVersion = '0.9.3'
+    ext.circleindicatorVersion = '1.2.2@aar'
 
     repositories {
         google()
