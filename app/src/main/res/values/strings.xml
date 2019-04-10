@@ -8,4 +8,8 @@
     <string name="lbl_choose_from_gallery">Choose from gallery</string>
     <string name="toast_image_intent_null">Image picker option is missing</string>
     <string name="capture_image_text">Press camera button on lower right to select the image of paragraph</string>
+
+
+    <string name="hint_enter_a_message">Type a message…</string>
+
 </resources>

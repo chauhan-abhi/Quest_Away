@@ -1,20 +1,22 @@
-package com.abhi.questaway.view
+package com.abhi.questaway.view.chatui
 
 import android.Manifest
 import android.app.Activity
+import android.app.AlertDialog
+import android.content.DialogInterface
 import android.content.Intent
 import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
-import android.support.design.widget.FloatingActionButton
-import android.support.v7.app.AppCompatActivity
-import android.view.View
-import android.widget.TextView
+import android.util.Log
 import android.widget.Toast
 import com.abhi.questaway.R
 import com.abhi.questaway.base.ImagePickerActivity
-import com.abhi.questaway.view.chatui.ChatActivity
+import com.abhi.questaway.network.ApiClient
+import com.abhi.questaway.network.ResultModel
+import com.abhi.questaway.network.RetrofitApiService
+import com.abhi.questaway.view.chatui.data.MessagesFixtures
 import com.google.firebase.ml.vision.FirebaseVision
 import com.google.firebase.ml.vision.common.FirebaseVisionImage
 import com.karumi.dexter.Dexter
@@ -22,41 +24,79 @@ import com.karumi.dexter.MultiplePermissionsReport
 import com.karumi.dexter.PermissionToken
 import com.karumi.dexter.listener.PermissionRequest
 import com.karumi.dexter.listener.multi.MultiplePermissionsListener
+import com.stfalcon.chatkit.messages.MessageHolders
+import com.stfalcon.chatkit.messages.MessageInput
+import com.stfalcon.chatkit.messages.MessagesList
+import com.stfalcon.chatkit.messages.MessagesListAdapter
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+import retrofit2.Retrofit
 
-class HomeScreenActivity : AppCompatActivity() {
+class ChatActivity : DemoMessagesActivity(), MessageInput.InputListener, MessageInput.AttachmentsListener,
+    MessageInput.TypingListener {
 
+    private lateinit var messagesList: MessagesList
     private val REQUEST_IMAGE = 100
-    lateinit var button: FloatingActionButton
-    lateinit var proceedButton: FloatingActionButton
-    lateinit var cancelButton: FloatingActionButton
-    lateinit var textView: TextView
+    var linewiseText = ""
+    lateinit var apiService : RetrofitApiService
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
-        button = findViewById(R.id.upload_button)
-        proceedButton = findViewById(R.id.proceed_tick)
-        cancelButton = findViewById(R.id.cancel_tick)
-        textView = findViewById(R.id.textView)
-        button.setOnClickListener {
-            onSelectImageClicked()
+        setContentView(R.layout.activity_chat)
+        apiService = ApiClient.getClient(applicationContext)!!
+            .create(RetrofitApiService::class.java)
+        this.messagesList = findViewById(R.id.messagesList)
+        initAdapter()
+
+        val input = findViewById<MessageInput>(R.id.input)
+        input.setInputListener(this)
+        input.setTypingListener(this)
+        input.setAttachmentsListener(this)
+
+    }
+
+    private fun initAdapter() {
+        val holdersConfig = MessageHolders()
+            .setIncomingTextLayout(R.layout.item_custom_incoming_text_message)
+            .setOutcomingTextLayout(R.layout.item_custom_outcoming_text_message)
+            .setIncomingImageLayout(R.layout.item_custom_incoming_image_message)
+            .setOutcomingImageLayout(R.layout.item_custom_outcoming_image_message)
+
+        super.messagesAdapter = MessagesListAdapter(super.senderId, holdersConfig, super.imageLoader)
+
+        super.messagesAdapter.enableSelectionMode(this)
+        super.messagesAdapter.setLoadMoreListener(this)
+        super.messagesAdapter.registerViewClickListener(
+            R.id.messageUserAvatar
+        ) { view, message ->
+            /*AppUtils.showToast(
+                                this@DefaultMessagesActivity,
+                                message.getUser().name + " avatar click",
+                                false
+                            )*/
         }
-        textView.text = getString(R.string.capture_image_text)
-        proceedButton.setOnClickListener {
-            // take query
-            proceedButton.visibility = View.GONE
-            cancelButton.visibility = View.GONE
-            button.visibility = View.VISIBLE
-            val intent = Intent(this@HomeScreenActivity, ChatActivity::class.java)
-            intent.putExtra("paragraph", textView.text.toString())
-            startActivity(intent)
+        this.messagesList.setAdapter(super.messagesAdapter)
+    }
+
+
+    override fun onSelectionChanged(count: Int) {
+
+    }
+
+    override fun onSubmit(input: CharSequence?): Boolean {
+        addMessageToAdapter(input.toString(), false)
+        if (linewiseText != "") {
+            makeRequest(linewiseText, input.toString())
+        } else {
+            addMessageToAdapter("Please provide an image to be processed", true)
         }
-        cancelButton.setOnClickListener {
-            proceedButton.visibility = View.GONE
-            cancelButton.visibility = View.GONE
-            button.visibility = View.VISIBLE
-        }
-        ImagePickerActivity.clearCache(this)
+        return true
+    }
+
+    override fun onAddAttachments() {
+        linewiseText = ""
+        onSelectImageClicked()
     }
 
     private fun onSelectImageClicked() {
@@ -83,17 +123,6 @@ class HomeScreenActivity : AppCompatActivity() {
             }).check()
 
     }
-
-    /*private fun showSettingsDialog() {
-        val builder = AlertDialog.Builder(this@HomeScreenActivity)
-        builder.setTitle(getString(R.string.dialog_permission_title))
-        builder.setMessage(getString(R.string.dialog_permission_message))
-        builder.setPositiveButton(getString(R.string.go_to_settings), { dialog, which->
-            dialog.cancel()
-            openSettings() })
-        builder.setNegativeButton(getString(android.R.string.cancel), { dialog, which-> dialog.cancel() })
-        builder.show()
-    }*/
 
     private fun showImagePickerOptions() {
         ImagePickerActivity.showImagePickerOptions(this, object : ImagePickerActivity.PickerOptionListener {
@@ -145,6 +174,9 @@ class HomeScreenActivity : AppCompatActivity() {
                     try {
                         val bitmap = MediaStore.Images.Media.getBitmap(this.contentResolver, uri)
                         // ml kit function call
+                        super.messagesAdapter.addToStart(
+                            MessagesFixtures.getImageMessage(uri.toString()), true
+                        )
                         startTextRecognition(bitmap)
                     } catch (e: Exception) {
                         e.printStackTrace()
@@ -161,7 +193,6 @@ class HomeScreenActivity : AppCompatActivity() {
 
         detector.processImage(image)
             .addOnSuccessListener { firebaseVisionText ->
-                var linewiseText = ""
                 for (block in firebaseVisionText.textBlocks) {
 //                    val boundingBox = block.boundingBox
 //                    val cornerPoints = block.cornerPoints
@@ -185,20 +216,78 @@ class HomeScreenActivity : AppCompatActivity() {
                             val elementFrame = element.boundingBox
                         }*/
                     }
-                    if (linewiseText == "") {
-                        textView.text = "No text found. Please click another image"
+                }
+                if (linewiseText == "") {
+                    addMessageToAdapter("Sorry we could not find any text in the image. Please try again", true)
+
+                } else {
+                    addMessageToAdapter(linewiseText, true)
+                }
+
+            }
+            .addOnFailureListener {
+                addMessageToAdapter("Sorry we could not find any text in the image. Please try again", true)
+            }
+    }
+
+    override fun onStartTyping() {
+        Log.v("Typing listener", "Start Typing")
+    }
+
+    override fun onStopTyping() {
+        Log.v("Typing listener", "Stop Typing")
+    }
+
+    private fun makeRequest(paragraph: String, question: String) {
+       val message = MessagesFixtures.getTextMessage(
+            "Fetching the answer to the question",
+            true
+        )
+        val id  = message.id
+        super.messagesAdapter.addToStart(message, true)
+        apiService.getResult(paragraph, question).enqueue(object : Callback<ResultModel> {
+            override fun onFailure(call: Call<ResultModel>, t: Throwable) {
+                t.printStackTrace()
+                deleteMessage(id)
+                addMessageToAdapter("Sorry! could not reach the server. Please check your internet connection", true)
+            }
+
+            override fun onResponse(call: Call<ResultModel>, response: Response<ResultModel>) {
+                deleteMessage(id)
+                if (response.isSuccessful) {
+                    val result = response.body()!!.result
+                    if (result == "") {
+                        addMessageToAdapter("We could not get you. Please specify your question clearly", true)
                     } else {
-                        textView.text = linewiseText
-                        proceedButton.visibility = View.VISIBLE
-                        cancelButton.visibility = View.VISIBLE
-                        button.visibility = View.INVISIBLE
+                        addMessageToAdapter(result.toString(), true)
                     }
                 }
             }
-            .addOnFailureListener {
-                Toast.makeText(this, "Oops! Text recognition failed", Toast.LENGTH_SHORT).show()
-                textView.text = "No text found. Please click another image"
-            }
+        })
+    }
+
+    private fun addMessageToAdapter(text: String, isBot: Boolean) {
+        super.messagesAdapter.addToStart(
+            MessagesFixtures.getTextMessage(
+                text,
+                isBot
+            ),
+            true
+        )
+    }
+
+    private fun deleteMessage(id: String) {
+        super.messagesAdapter.deleteById(id)
+    }
+
+    override fun onBackPressed() {
+        AlertDialog.Builder(this)
+            .setTitle("Quest Away")
+            .setMessage("Are you sure you don't want to explore more?")
+            .setPositiveButton(android.R.string.yes
+            ) { dialog, which -> finish() }
+            .setNegativeButton(android.R.string.no, null)
+            .setIcon(android.R.drawable.ic_dialog_alert)
+            .show()
     }
 }
-

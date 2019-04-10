@@ -33,6 +33,6 @@ class NetModule {
 
     @Provides
     @Singleton
-    internal fun provideApiService(retrofit: Retrofit): RetrofitApiService = retrofit.create(RetrofitApiService::class.java)
+    fun provideApiService(retrofit: Retrofit): RetrofitApiService = retrofit.create(RetrofitApiService::class.java)
 
 }
