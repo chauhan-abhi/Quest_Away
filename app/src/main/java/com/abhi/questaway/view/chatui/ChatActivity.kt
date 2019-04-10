@@ -2,6 +2,8 @@ package com.abhi.questaway.view.chatui
 
 import android.Manifest
 import android.app.Activity
+import android.app.AlertDialog
+import android.content.DialogInterface
 import android.content.Intent
 import android.graphics.Bitmap
 import android.net.Uri
@@ -276,5 +278,16 @@ class ChatActivity : DemoMessagesActivity(), MessageInput.InputListener, Message
 
     private fun deleteMessage(id: String) {
         super.messagesAdapter.deleteById(id)
+    }
+
+    override fun onBackPressed() {
+        AlertDialog.Builder(this)
+            .setTitle("Quest Away")
+            .setMessage("Are you sure you don't want to explore more?")
+            .setPositiveButton(android.R.string.yes
+            ) { dialog, which -> finish() }
+            .setNegativeButton(android.R.string.no, null)
+            .setIcon(android.R.drawable.ic_dialog_alert)
+            .show()
     }
 }
